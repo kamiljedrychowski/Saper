@@ -93,7 +93,67 @@ public class Main extends Application {
 
 
         });
+        bombAmount = new Label();
+        markedAmount = new Label();
+        bombAmount.setPadding(new Insets(10, 10, 10, 10));
+        bombAmount.setFont(new Font("Arial", 32));
+        markedAmount.setPadding(new Insets(10, 10, 10, 10));
+        markedAmount.setFont(new Font("Arial", 32));
+        HBox topMenu = new HBox();
+        topMenu.setPadding(new Insets(10, 10, 10, 10));
 
+
+        Label col = new Label("Kolumny");
+        Label row = new Label("Rzędy");
+        Label bom = new Label("Bomby");
+        Label tempp = new Label(null);
+        Label bomAmount = new Label("Liczba Bomb");
+        Label marAmount = new Label("Oznaczone pola");
+        bomAmount.setPadding(new Insets(10, 10, 10, 10));
+        marAmount.setPadding(new Insets(10, 10, 10, 10));
+
+
+        VBox row1 = new VBox(3);
+        row1.getChildren().addAll(col, colInp, row, rowInp);
+
+        VBox row2 = new VBox(3);
+        row2.getChildren().addAll(bom, bombInp, tempp, newGame);
+
+        Button buttonEasy = new Button("Łatwa gra");
+        buttonEasy.setOnAction(actionEvent -> {
+            gra = FabricOfGame.letsplay(0, godMode.isSelected());
+            newGame(grid, gra);
+        });
+        Button buttonMedium = new Button("Średnia gra");
+        buttonMedium.setOnAction(actionEvent -> {
+            gra = FabricOfGame.letsplay(1, godMode.isSelected());
+            newGame(grid, gra);
+        });
+        Button buttonHard = new Button("Trudna gra");
+        buttonHard.setOnAction(actionEvent -> {
+            gra = FabricOfGame.letsplay(2, godMode.isSelected());
+            newGame(grid, gra);
+        });
+
+        VBox row3 = new VBox(3);
+        row3.getChildren().addAll(buttonEasy, buttonMedium, buttonHard, godMode);
+
+        VBox row4 = new VBox(3);
+        row4.getChildren().addAll(bomAmount, bombAmount);
+
+        VBox row5 = new VBox(3);
+        row5.getChildren().addAll(marAmount, markedAmount);
+
+
+        topMenu.getChildren().addAll(row1, row2, row3, row4, row5);
+
+        BorderPane screen = new BorderPane();
+        screen.setTop(topMenu);
+        screen.setCenter(grid);
+
+        primaryStage.setScene(new Scene(screen, 700, 700));
+        primaryStage.setTitle("Saper");
+        primaryStage.show();
     }
 
     public static void main(String[] args) {
