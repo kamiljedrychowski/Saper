@@ -35,6 +35,137 @@ public class Main extends Application {
 
     private Map<String, Image> icons = new HashMap<>();
 
+    private void newGame(GridPane grid, Game game) {
+        grid.getChildren().clear();
+        bombAmount.setText(Integer.toString(game.getBombs()));
+
+        markedAmount.setText(Integer.toString(gra.getCounter()));
+        buttonBoard = new Button[game.getRow()][game.getCol()];
+        for (int r = 0; r < game.getRow(); r++) {
+            for (int c = 0; c < game.getCol(); c++) {
+                Button button = new Button();
+                if (gra.getMarked(r, c) == 5) {
+                    button.setGraphic(new ImageView(icons.get("buttonx")));
+                } else {
+                    button.setGraphic(new ImageView(icons.get("button")));
+                }
+
+                button.setStyle("-fx-background-color: transparent;");
+                final int rr = r;
+                final int cc = c;
+
+                button.setOnMouseClicked(event -> {
+                    MouseButton b = event.getButton();
+
+                    if (b == MouseButton.PRIMARY) {
+                        if (gra.returnValue(rr, cc) == 9) {
+                            button.setGraphic(new ImageView(icons.get("bomb")));
+                        } else {
+                            button.setGraphic(new ImageView(icons.get(Integer.toString(gra.returnValue(rr, cc)))));
+                        }
+                        button.setDisable(true);
+                        if (gra.won()) {
+                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                            alert.setTitle("Koniec gry");
+                            alert.setHeaderText("WYGRANA!!!");
+                            alert.setContentText(null);
+                            alert.showAndWait();
+                            endOfGame();
+                        }
+                        show_nummber(rr, cc);
+                    }
+                    else if (b == MouseButton.SECONDARY) {
+                        if (gra.getMarked(rr, cc) == 0 || gra.getMarked(rr, cc) == 5) {
+                            gra.addCounter();
+                        }
+                        else if (gra.getMarked(rr, cc) == 1 || gra.getMarked(rr, cc) == 6) {
+                            gra.subCounter();
+                        }
+                        gra.addMarked(rr, cc);
+
+                        if (gra.getMarked(rr, cc) == 0) {
+                            button.setGraphic(new ImageView(icons.get("button")));
+                        } else if (gra.getMarked(rr, cc) == 1) {
+                            button.setGraphic(new ImageView(icons.get("d")));
+                        } else if (gra.getMarked(rr, cc) == 2) {
+                            button.setGraphic(new ImageView(icons.get("q")));
+                        }
+                        if (gra.getMarked(rr, cc) == 5) {
+                            button.setGraphic(new ImageView(icons.get("buttonx")));
+                        } else if (gra.getMarked(rr, cc) == 6) {
+                            button.setGraphic(new ImageView(icons.get("dx")));
+                        } else if (gra.getMarked(rr, cc) == 7) {
+                            button.setGraphic(new ImageView(icons.get("qx")));
+                        }
+
+
+                        markedAmount.setText(Integer.toString(gra.getCounter()));
+                        System.out.println(gra.getCounter());
+
+                        if (gra.won()) {
+                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                            alert.setTitle("Koniec gry");
+                            alert.setHeaderText("WYGRANA!!!");
+                            alert.setContentText(null);
+                            alert.showAndWait();
+                            endOfGame();
+                        }
+                    }
+                });
+
+                buttonBoard[r][c] = button;
+                grid.add(button, c, r);
+            }
+        }
+    }
+
+    private void show_nummber(int r, int c) {        // funkcja do wyświetlania sąsiednich pól po otwarciu pola pustego
+        if (!this.gra.isEnd()) {
+            ArrayList<Point> retval = new ArrayList<>();
+            if (this.gra.check_neighbours(r, c, retval)) {
+                for (Point p : retval) {
+                    this.buttonBoard[p.x][p.y].setGraphic(new ImageView(icons.get(Integer.toString(gra.returnValue(p.x, p.y)))));
+                    this.buttonBoard[p.x][p.y].setDisable(true);
+                }
+                if (this.gra.won()) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);       // można wrzucić to do funkcji bo się powtarza
+                    alert.setTitle("Koniec gry");
+                    alert.setHeaderText("WYGRANA!!!");
+                    alert.setContentText(null);
+                    alert.showAndWait();
+                    endOfGame();
+                }
+            } else {
+                this.buttonBoard[r][c].setGraphic(new ImageView(icons.get("bomb")));
+                this.buttonBoard[r][c].setDisable(true);
+                show();
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);       // można wrzucić to do funkcji bo się powtarza
+                alert.setTitle("Koniec gry");
+                alert.setHeaderText("PRZEGRANA :( !!!");
+                alert.setContentText(null);
+                alert.showAndWait();
+                endOfGame();
+            }
+        }
+    }
+
+    private void show() {        // funkcja do wyświetlenia wszystkich bomb po wciśnięciu bomby
+        ArrayList<Point> temp = this.gra.allBombs();
+        for (Point p : temp) {
+            this.buttonBoard[p.x][p.y].setGraphic(new ImageView(icons.get("bomb")));
+        }
+
+    }
+
+    private void endOfGame() {
+        if (gra.isEnd()) {
+            for (Button[] buttons : buttonBoard) {
+                for (Button button : buttons) {
+                    button.setDisable(true);
+                }
+            }
+        }
+    }
 
     @Override
     public void start(Stage primaryStage) {
