@@ -16,6 +16,77 @@ public class Game implements IGame {
     int [][]board;  // tablica pól z ich wartościami 0-8 9 - bomba
     int [][]marked; // tablica pól z ich aktualnym stanem 0-normalny 1-f. jest b 2-f. może być b 3-odkryte
 
+    static public class Builder{
+        int row;
+        int col;
+        int bombs;
+        int[][] board;
+        int[][] marked;
+
+        Builder row(int row){
+            this.row = row;
+            return this;
+        }
+        Builder col(int col){
+            this.col = col;
+            return this;
+        }
+        Builder bombs(int bombs){
+            this.bombs = bombs;
+            return this;
+        }
+
+        int[][] build_board(int bombs){         // funkcja ustawiająca wszystkie wartości w tablicy
+            int temp = 0;
+            Random generator = new Random();
+            while(temp < bombs){                        // najpierw losujemy dowolną ilość bomb
+                int bombsRow = generator.nextInt(this.row);
+                int bombsCol = generator.nextInt(this.col);
+                if(this.board[bombsRow][bombsCol] != 9){
+                    this.board[bombsRow][bombsCol] = 9;
+                    temp++;
+                }
+            }
+            for(int rr=0; rr<this.row; rr++){           // następnie ustalamy pozostałe wartości licząc bomby w sąsiedztwie
+                for(int cc=0; cc<this.col; cc++){
+                    if(this.board[rr][cc] == 9){
+                        for(int ccc=cc-1; ccc<cc+2; ccc++){
+                            for(int rrr=rr-1;rrr<rr+2; rrr++){
+                                if(this.col > ccc && ccc>=0 && this.row > rrr && rrr>=0 && this.board[rrr][ccc] != 9){
+                                    this.board[rrr][ccc]++;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return this.board;
+        }
+
+        public Game build(){
+            Game newgame = new Game();
+            this.marked = new int[this.row][this.col];
+            this.board = new int[this.row][this.col];
+            newgame.row = this.row;
+            newgame.col = this.col;
+            newgame.bombs = this.bombs;
+            newgame.fields = this.row * this.col;
+            newgame.counter = 0;
+            newgame.end = false;
+
+            newgame.marked = new int[this.row][this.col];      // domyślną wartością dla int jest 0
+            newgame.board = new int[this.row][this.col];
+            newgame.board = this.build_board(this.bombs);
+
+            for(int i = 0 ; i< this.row ; i++){
+                for(int ii = 0 ; ii< this.col ; ii++)
+                    System.out.print(newgame.board[i][ii]);
+                System.out.println();
+            }
+            return newgame;
+        }
+    }
+
     public boolean check_neighbours(int r, int c, ArrayList<Point> retval){         // funkcja sprawdzająca do odsłonięcia sąsiadów gdzy odkryło się puste pole 0
         if(this.board[r][c] == 9){
             this.end = true;
