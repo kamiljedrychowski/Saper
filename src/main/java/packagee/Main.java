@@ -23,6 +23,26 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Main {
-    
+public class Main extends Application {
+    private static final int BUTTON_PADDING = 4;
+    private Game gra;
+    private Button[][] buttonBoard;
+    private TextField rowInp;
+    private TextField colInp;
+    private TextField bombInp;
+    private Label bombAmount;
+    private Label markedAmount;
+
+    private Map<String, Image> icons = new HashMap<>();
+
+
+    @Override
+    public void start(Stage primaryStage) {
+
+    }
+
+    public static void main(String[] args) {
+
+        launch(args);
+    }
 }
