@@ -2,6 +2,35 @@ package packagee;
 
 public class GMode extends Game {
 
+    static public class Builder extends Game.Builder {
+        public GMode build() {
+            GMode newgame = new GMode();
+            this.marked = new int[this.row][this.col];
+            this.board = new int[this.row][this.col];
+            newgame.row = this.row;
+            newgame.col = this.col;
+            newgame.bombs = this.bombs;
+            newgame.fields = this.row * this.col;
+            newgame.counter = 0;
+            newgame.end = false;
+
+            newgame.marked = new int[this.row][this.col];
+            newgame.board = new int[this.row][this.col];
+            newgame.board = this.build_board(this.bombs);
+
+            for (int i = 0; i < this.row; i++) {
+                for (int ii = 0; ii < this.col; ii++) {
+                    if (newgame.board[i][ii] == 9) {
+                        newgame.marked[i][ii] = 5;
+                    }
+                    System.out.print(newgame.board[i][ii]);
+                }
+                System.out.println();
+            }
+            return newgame;
+        }
+    }
+
 
     public void addMarked(int r, int c) {
         if (this.board[r][c] == 9) {
